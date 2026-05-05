@@ -1,39 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekha Art Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-[#0b0b0b] text-white flex items-center justify-center min-h-screen p-6">
+    <div class="w-full max-w-lg">
+        <div class="mb-10 text-center">
+            <h1 class="text-4xl font-bold tracking-tighter">ADMIN PANEL</h1>
+            <p class="text-gray-500 mt-2">Publish new masterpieces to Rekha Art</p>
+        </div>
 
-<body class="p-4">
+        <div class="bg-[#161616] p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+            <div class="space-y-5">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Product Name</label>
+                    <input id="pName" type="text" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Price (INR)</label>
+                    <input id="pPrice" type="number" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Drive Image ID</label>
+                    <input id="pID" type="text" placeholder="Paste the unique ID from Drive Link" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
+                </div>
+                <button onclick="publish()" id="btn" class="w-full bg-rose-600 hover:bg-rose-700 py-5 rounded-2xl font-black text-lg tracking-widest transition-all active:scale-95 shadow-xl shadow-rose-600/20">
+                    PUBLISH NOW
+                </button>
+            </div>
+        </div>
+    </div>
 
-<h1 class="text-xl font-bold mb-4">Admin Panel</h1>
+    <script>
+        async function publish() {
+            const btn = document.getElementById('btn');
+            const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL";
 
-<input id="name" placeholder="Product Name" class="border p-2 mb-2 w-full"/>
-<input id="price" placeholder="Price" class="border p-2 mb-2 w-full"/>
-<input id="image" placeholder="Image URL" class="border p-2 mb-2 w-full"/>
-<input id="category" placeholder="Category" class="border p-2 mb-2 w-full"/>
+            const data = {
+                name: document.getElementById('pName').value,
+                price: document.getElementById('pPrice').value,
+                img: `https://drive.google.com/uc?export=view&id=${document.getElementById('pID').value}`,
+                action: 'add'
+            };
 
-<button onclick="add()" class="bg-black text-white px-4 py-2 rounded">
-Add Product
-</button>
+            if(!data.name || !data.price || !data.img) return alert("All fields required!");
 
-<script>
+            btn.innerText = "UPLOADING...";
+            btn.disabled = true;
 
-const API="YOUR_WEB_APP_URL";
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
 
-function add(){
-  fetch(API,{
-    method:"POST",
-    body:new URLSearchParams({
-      name:document.getElementById("name").value,
-      price:document.getElementById("price").value,
-      image:document.getElementById("image").value,
-      category:document.getElementById("category").value
-    })
-  }).then(()=>alert("Added"));
-}
-
-</script>
-
+            alert("Masterpiece Published!");
+            location.reload();
+        }
+    </script>
 </body>
 </html>
