@@ -2,78 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rekha Art | Premium Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekha Art | Premium Gallery</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9fa; }
-        .product-card { background: white; border-radius: 24px; transition: all 0.3s ease; border: 1px solid #eee; }
-        .product-img { aspect-ratio: 1/1; object-fit: cover; width: 100%; border-radius: 20px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fafafa; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
+        .product-card:hover { transform: translateY(-8px); border-color: #ef4444; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); }
     </style>
 </head>
-<body class="pb-20">
+<body>
 
-    <nav class="sticky top-0 z-50 glass border-b px-5 py-4 flex justify-between items-center">
-        <h1 class="text-2xl font-black tracking-tighter">REKHA<span class="text-rose-600">ART</span></h1>
-        <a href="admin.html" class="bg-gray-100 p-2 rounded-full text-gray-400"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></a>
+    <nav class="sticky top-0 z-50 glass px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold tracking-tighter text-black">REKHA<span class="text-rose-600 italic">ART.</span></h1>
+            <div class="flex gap-4">
+                <button class="text-gray-500 hover:text-black transition"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+                <a href="admin.html" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest">ADMIN</a>
+            </div>
+        </div>
     </nav>
 
-    <div id="grid" class="max-w-6xl mx-auto p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-        </div>
+    <div class="flex gap-3 px-6 py-4 overflow-x-auto no-scrollbar max-w-7xl mx-auto">
+        <button class="bg-black text-white px-6 py-2 rounded-full text-sm font-semibold">Latest</button>
+        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Paintings</button>
+        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Sketches</button>
+        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Custom Art</button>
+    </div>
 
-    <div id="payModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm p-4 flex items-end sm:items-center justify-center">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-6 animate-in slide-in-from-bottom duration-300">
-            <div id="imageSlider" class="flex overflow-x-auto snap-x no-scrollbar gap-2 mb-4 scroll-smooth"></div>
-            <h2 id="mName" class="text-xl font-extrabold text-gray-900 truncate"></h2>
-            <p id="mPrice" class="text-rose-600 text-3xl font-black mb-6 mt-1"></p>
-            
-            <div class="space-y-3">
-                <button id="payBtn" class="w-full bg-black text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition">
-                    PAY VIA UPI
-                </button>
-                <button onclick="closeModal()" class="w-full py-2 text-gray-400 font-semibold">Cancel</button>
+    <main class="max-w-7xl mx-auto p-6">
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+        </div>
+    </main>
+
+    <div id="payModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modalContent">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="modalTitle" class="text-2xl font-extrabold text-gray-900">Product Name</h2>
+                        <p id="modalPrice" class="text-rose-600 text-xl font-bold mt-1">₹0.00</p>
+                    </div>
+                    <button onclick="closeModal()" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="bg-gray-50 rounded-3xl p-6 border-2 border-dashed border-gray-200 text-center mb-6">
+                    <img id="qrDisplay" src="" alt="Scan to Pay" class="w-48 mx-auto rounded-xl shadow-sm mb-2">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure UPI Merchant QR</span>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="directPayBtn" class="w-full bg-[#0070f3] text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-700 transition active:scale-95">
+                        <i class="fa-solid fa-bolt-lightning"></i> PAY VIA UPI APP
+                    </button>
+                    <button id="waNotifyBtn" class="w-full bg-black text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-800 transition active:scale-95">
+                        <i class="fa-brands fa-whatsapp"></i> SEND PAYMENT PROOF
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const API = "https://script.google.com/macros/s/AKfycbzV6AFO9LjDzrWnZ4Fw_Tdz32Ieif2h9MXFjavyrweUw5VM8DVQEYJhJuAx12xdJqePZw/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV6AFO9LjDzrWnZ4Fw_Tdz32Ieif2h9MXFjavyrweUw5VM8DVQEYJhJuAx12xdJqePZw/exec"; // Yahan apna URL daalein
 
-        async function load() {
-            const res = await fetch(API);
-            const data = await res.json();
-            const grid = document.getElementById('grid');
-            grid.innerHTML = data.map(p => `
-                <div class="product-card p-3 shadow-sm active:scale-95 transition" onclick="openPay('${p.Name}', '${p.Price}', '${p.ImageURL}')">
-                    <img src="${p.ImageURL.split(',')[0]}" class="product-img mb-3 bg-gray-100" loading="lazy">
-                    <h3 class="font-bold text-gray-800 text-sm truncate">${p.Name}</h3>
-                    <div class="flex justify-between items-center mt-1">
-                        <p class="text-rose-600 font-black">₹${p.Price}</p>
-                        <span class="text-[10px] bg-gray-100 px-2 py-1 rounded-full text-gray-400">${p.ID}</span>
+        async function loadProducts() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                renderUI(data);
+            } catch (err) { console.error("Error loading products"); }
+        }
+
+        function renderUI(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card bg-white rounded-3xl p-3">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square mb-4">
+                        <img src="${p.ImageURL}" class="object-cover w-full h-full" alt="${p.Name}">
+                        <div class="absolute top-3 left-3 bg-white/90 px-3 py-1 rounded-full text-[10px] font-bold tracking-tighter">
+                            ${p.ID}
+                        </div>
+                    </div>
+                    <div class="px-2 pb-2">
+                        <h3 class="text-sm font-semibold text-gray-500 mb-1">${p.Category || 'Collection'}</h3>
+                        <h2 class="text-lg font-bold text-gray-900 truncate mb-3">${p.Name}</h2>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-black">₹${p.Price}</span>
+                            <button onclick="handleBuy('${p.ID}', '${p.Name}', '${p.Price}')" class="bg-rose-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-black transition">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function openPay(name, price, images) {
-            document.getElementById('mName').innerText = name;
-            document.getElementById('mPrice').innerText = "₹" + price;
-            
-            const slider = document.getElementById('imageSlider');
-            const imgList = images.split(',');
-            slider.innerHTML = imgList.map(img => `<img src="${img}" class="w-full aspect-square object-cover rounded-3xl snap-center flex-shrink-0 bg-gray-50">`).join('');
-            
-            document.getElementById('payBtn').onclick = () => {
-                window.location.href = `upi://pay?pa=YOUR_UPI@okaxis&pn=RekhaArt&am=${price}&cu=INR`;
+        function handleBuy(id, name, price) {
+            // Track Click
+            fetch(SCRIPT_URL + `?action=track&id=${id}`, { method: 'POST' });
+
+            const upiId = "rekhaart@upi"; // Static or dynamic
+            const waNumber = "919999999999"; 
+
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalPrice').innerText = "₹" + price;
+            document.getElementById('qrDisplay').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${upiId}%26pn=RekhaArt%26am=${price}%26cu=INR`;
+
+            document.getElementById('directPayBtn').onclick = () => {
+                window.location.href = `upi://pay?pa=${upiId}&pn=RekhaArt&am=${price}&cu=INR`;
             };
-            document.getElementById('payModal').classList.remove('hidden');
+
+            document.getElementById('waNotifyBtn').onclick = () => {
+                window.open(`https://wa.me/${waNumber}?text=Paid for ${name} (ID: ${id})`);
+            };
+
+            const modal = document.getElementById('payModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 10);
         }
 
-        function closeModal() { document.getElementById('payModal').classList.add('hidden'); }
-        window.onload = load;
+        function closeModal() {
+            const modal = document.getElementById('payModal');
+            const content = document.getElementById('modalContent');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        window.onload = loadProducts;
     </script>
 </body>
 </html>
