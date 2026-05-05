@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-4">
+
+<h1 class="text-xl font-bold mb-4">Admin Panel</h1>
+
+<input id="name" placeholder="Product Name" class="border p-2 mb-2 w-full"/>
+<input id="price" placeholder="Price" class="border p-2 mb-2 w-full"/>
+<input id="image" placeholder="Image URL" class="border p-2 mb-2 w-full"/>
+<input id="category" placeholder="Category" class="border p-2 mb-2 w-full"/>
+
+<button onclick="add()" class="bg-black text-white px-4 py-2 rounded">
+Add Product
+</button>
+
+<script>
+
+const API="YOUR_WEB_APP_URL";
+
+function add(){
+  fetch(API,{
+    method:"POST",
+    body:new URLSearchParams({
+      name:document.getElementById("name").value,
+      price:document.getElementById("price").value,
+      image:document.getElementById("image").value,
+      category:document.getElementById("category").value
+    })
+  }).then(()=>alert("Added"));
+}
+
+</script>
+
+</body>
+</html>

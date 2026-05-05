@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+<title>Rekha Art</title>
+</head>
+
+<body class="bg-gray-100">
+
+<header class="bg-black text-white p-4 text-center text-2xl font-bold">
+Rekha Art
+</header>
+
+<div id="products" class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4"></div>
+
+<script>
+
+const API = "YOUR_WEB_APP_URL";
+
+fetch(API)
+.then(res=>res.json())
+.then(data=>{
+  let html="";
+  data.forEach(p=>{
+    html+=`
+    <div class="bg-white rounded-xl shadow hover:scale-105 transition">
+      <img src="${p.ImageURL}" class="h-40 w-full object-cover"/>
+      <div class="p-2">
+        <h3 class="font-bold">${p.Name}</h3>
+        <p class="text-red-500">₹${p.Price}</p>
+        <button onclick="buy('${p.ID}')"
+          class="bg-red-500 text-white w-full mt-2 py-2 rounded">
+          Buy
+        </button>
+      </div>
+    </div>`;
+  });
+  document.getElementById("products").innerHTML=html;
+});
+
+function buy(id){
+  fetch(API+"?action=trackClick&id="+id);
+  alert("Proceed to Payment");
+}
+
+</script>
+
+</body>
+</html>
