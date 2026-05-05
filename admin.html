@@ -3,61 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekha Art Admin</title>
+    <title>Admin Panel | Rekha Art</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#0b0b0b] text-white flex items-center justify-center min-h-screen p-6">
-    <div class="w-full max-w-lg">
-        <div class="mb-10 text-center">
-            <h1 class="text-4xl font-bold tracking-tighter">ADMIN PANEL</h1>
-            <p class="text-gray-500 mt-2">Publish new masterpieces to Rekha Art</p>
+<body class="bg-[#0c0c0c] text-white font-['Plus_Jakarta_Sans']">
+
+    <div class="max-w-md mx-auto p-6">
+        <div class="flex justify-between items-center mt-6 mb-12">
+            <h1 class="text-2xl font-bold tracking-tighter">REKHA ART <span class="text-rose-600">ADMIN</span></h1>
+            <a href="index.html" class="text-gray-500 border border-white/10 px-4 py-2 rounded-xl text-sm">Home</a>
         </div>
 
-        <div class="bg-[#161616] p-8 rounded-[2rem] border border-white/5 shadow-2xl">
-            <div class="space-y-5">
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Product Name</label>
-                    <input id="pName" type="text" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Price (INR)</label>
-                    <input id="pPrice" type="number" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Drive Image ID</label>
-                    <input id="pID" type="text" placeholder="Paste the unique ID from Drive Link" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
-                </div>
-                <button onclick="publish()" id="btn" class="w-full bg-rose-600 hover:bg-rose-700 py-5 rounded-2xl font-black text-lg tracking-widest transition-all active:scale-95 shadow-xl shadow-rose-600/20">
-                    PUBLISH NOW
-                </button>
+        <div class="space-y-5 bg-white/5 p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
+            <div>
+                <label class="text-[10px] font-bold text-rose-500 uppercase tracking-widest ml-1">Security</label>
+                <input id="pass" type="password" placeholder="Passcode (Default: 1234)" class="w-full bg-black/50 border border-white/10 p-4 rounded-2xl mt-2 outline-none focus:border-rose-600">
             </div>
+
+            <hr class="border-white/5 my-4">
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Product Details</label>
+                <input id="name" placeholder="Name of Artwork" class="w-full bg-black/50 border border-white/10 p-4 rounded-2xl mt-2 outline-none focus:border-rose-600 mb-3">
+                <input id="price" type="number" placeholder="Price in INR" class="w-full bg-black/50 border border-white/10 p-4 rounded-2xl outline-none focus:border-rose-600">
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Image IDs (Comma Separated)</label>
+                <textarea id="ids" placeholder="Example: 1xyz_Abc, 2abc_Xyz" class="w-full bg-black/50 border border-white/10 p-4 rounded-2xl mt-2 outline-none focus:border-rose-600 h-28 text-sm"></textarea>
+                <p class="text-[10px] text-gray-600 mt-2 italic">Dhyan dein: Sirf Drive File ID copy karein, pura link nahi.</p>
+            </div>
+            
+            <button onclick="publish()" id="btn" class="w-full bg-rose-600 py-5 rounded-2xl font-black tracking-widest active:scale-95 transition shadow-lg shadow-rose-600/20">PUBLISH MASTERPIECE</button>
         </div>
     </div>
 
     <script>
         async function publish() {
             const btn = document.getElementById('btn');
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV6AFO9LjDzrWnZ4Fw_Tdz32Ieif2h9MXFjavyrweUw5VM8DVQEYJhJuAx12xdJqePZw/exec";
-
-            const data = {
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                img: `https://drive.google.com/uc?export=view&id=${document.getElementById('pID').value}`,
+            const payload = {
+                passcode: document.getElementById('pass').value,
+                name: document.getElementById('name').value,
+                price: document.getElementById('price').value,
+                img: document.getElementById('ids').value,
                 action: 'add'
             };
 
-            if(!data.name || !data.price || !data.img) return alert("All fields required!");
+            if(!payload.passcode || !payload.name || !payload.img) return alert("Pura form bharein!");
 
-            btn.innerText = "UPLOADING...";
+            btn.innerText = "PUBLISHING...";
             btn.disabled = true;
 
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-
-            alert("Masterpiece Published!");
-            location.reload();
+            try {
+                const res = await fetch("PASTE_YOUR_APPS_SCRIPT_URL_HERE", {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.text();
+                
+                if(result === "Success") {
+                    alert("Art piece live ho gaya!");
+                    location.href = "index.html";
+                } else {
+                    alert("Wrong Passcode! Try again.");
+                    btn.innerText = "PUBLISH MASTERPIECE";
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                alert("Network error. URL check karein.");
+                btn.innerText = "PUBLISH MASTERPIECE";
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
