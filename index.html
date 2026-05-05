@@ -1,50 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.tailwindcss.com"></script>
-<title>Rekha Art</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekha Art | Premium Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fafafa; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
+        .product-card:hover { transform: translateY(-8px); border-color: #ef4444; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
 </head>
+<body>
 
-<body class="bg-gray-100">
+    <nav class="sticky top-0 z-50 glass px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold tracking-tighter text-black">REKHA<span class="text-rose-600 italic">ART.</span></h1>
+            <div class="flex gap-4">
+                <button class="text-gray-500 hover:text-black transition"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+                <a href="admin.html" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest">ADMIN</a>
+            </div>
+        </div>
+    </nav>
 
-<header class="bg-black text-white p-4 text-center text-2xl font-bold">
-Rekha Art
-</header>
+    <div class="flex gap-3 px-6 py-4 overflow-x-auto no-scrollbar max-w-7xl mx-auto">
+        <button class="bg-black text-white px-6 py-2 rounded-full text-sm font-semibold">Latest</button>
+        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Paintings</button>
+        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Sketches</button>
+        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Custom Art</button>
+    </div>
 
-<div id="products" class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4"></div>
+    <main class="max-w-7xl mx-auto p-6">
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
+        </div>
+    </main>
 
-<script>
+    <div id="payModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modalContent">
+            <div class="p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="modalTitle" class="text-2xl font-extrabold text-gray-900">Product Name</h2>
+                        <p id="modalPrice" class="text-rose-600 text-xl font-bold mt-1">₹0.00</p>
+                    </div>
+                    <button onclick="closeModal()" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
 
-const API = "YOUR_WEB_APP_URL";
+                <div class="bg-gray-50 rounded-3xl p-6 border-2 border-dashed border-gray-200 text-center mb-6">
+                    <img id="qrDisplay" src="" alt="Scan to Pay" class="w-48 mx-auto rounded-xl shadow-sm mb-2">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure UPI Merchant QR</span>
+                </div>
 
-fetch(API)
-.then(res=>res.json())
-.then(data=>{
-  let html="";
-  data.forEach(p=>{
-    html+=`
-    <div class="bg-white rounded-xl shadow hover:scale-105 transition">
-      <img src="${p.ImageURL}" class="h-40 w-full object-cover"/>
-      <div class="p-2">
-        <h3 class="font-bold">${p.Name}</h3>
-        <p class="text-red-500">₹${p.Price}</p>
-        <button onclick="buy('${p.ID}')"
-          class="bg-red-500 text-white w-full mt-2 py-2 rounded">
-          Buy
-        </button>
-      </div>
-    </div>`;
-  });
-  document.getElementById("products").innerHTML=html;
-});
+                <div class="space-y-3">
+                    <button id="directPayBtn" class="w-full bg-[#0070f3] text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-700 transition active:scale-95">
+                        <i class="fa-solid fa-bolt-lightning"></i> PAY VIA UPI APP
+                    </button>
+                    <button id="waNotifyBtn" class="w-full bg-black text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-800 transition active:scale-95">
+                        <i class="fa-brands fa-whatsapp"></i> SEND PAYMENT PROOF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function buy(id){
-  fetch(API+"?action=trackClick&id="+id);
-  alert("Proceed to Payment");
-}
+    <script>
+        const SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL"; // Yahan apna URL daalein
 
-</script>
+        async function loadProducts() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                renderUI(data);
+            } catch (err) { console.error("Error loading products"); }
+        }
 
+        function renderUI(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card bg-white rounded-3xl p-3">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square mb-4">
+                        <img src="${p.ImageURL}" class="object-cover w-full h-full" alt="${p.Name}">
+                        <div class="absolute top-3 left-3 bg-white/90 px-3 py-1 rounded-full text-[10px] font-bold tracking-tighter">
+                            ${p.ID}
+                        </div>
+                    </div>
+                    <div class="px-2 pb-2">
+                        <h3 class="text-sm font-semibold text-gray-500 mb-1">${p.Category || 'Collection'}</h3>
+                        <h2 class="text-lg font-bold text-gray-900 truncate mb-3">${p.Name}</h2>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-black">₹${p.Price}</span>
+                            <button onclick="handleBuy('${p.ID}', '${p.Name}', '${p.Price}')" class="bg-rose-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-black transition">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleBuy(id, name, price) {
+            // Track Click
+            fetch(SCRIPT_URL + `?action=track&id=${id}`, { method: 'POST' });
+
+            const upiId = "rekhaart@upi"; // Static or dynamic
+            const waNumber = "919999999999"; 
+
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalPrice').innerText = "₹" + price;
+            document.getElementById('qrDisplay').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${upiId}%26pn=RekhaArt%26am=${price}%26cu=INR`;
+
+            document.getElementById('directPayBtn').onclick = () => {
+                window.location.href = `upi://pay?pa=${upiId}&pn=RekhaArt&am=${price}&cu=INR`;
+            };
+
+            document.getElementById('waNotifyBtn').onclick = () => {
+                window.open(`https://wa.me/${waNumber}?text=Paid for ${name} (ID: ${id})`);
+            };
+
+            const modal = document.getElementById('payModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('payModal');
+            const content = document.getElementById('modalContent');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        window.onload = loadProducts;
+    </script>
 </body>
 </html>
