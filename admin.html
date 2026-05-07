@@ -1,64 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekha Art Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#0b0b0b] text-white flex items-center justify-center min-h-screen p-6">
-    <div class="w-full max-w-lg">
-        <div class="mb-10 text-center">
-            <h1 class="text-4xl font-bold tracking-tighter">ADMIN PANEL</h1>
-            <p class="text-gray-500 mt-2">Publish new masterpieces to Rekha Art</p>
-        </div>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rekha Art | Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0d0b; --surface: #191512; --surface2: #211e1a;
+      --ink: #f0e8de; --muted: #7a6e64; --accent: #c0392b; --green: #22c55e;
+      --border: rgba(240,232,222,.07); --radius: 1.25rem;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-        <div class="bg-[#161616] p-8 rounded-[2rem] border border-white/5 shadow-2xl">
-            <div class="space-y-5">
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Product Name</label>
-                    <input id="pName" type="text" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Price (INR)</label>
-                    <input id="pPrice" type="number" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Drive Image ID</label>
-                    <input id="pID" type="text" placeholder="Paste the unique ID from Drive Link" class="w-full bg-black border border-white/10 p-4 rounded-2xl mt-2 focus:border-rose-600 outline-none transition">
-                </div>
-                <button onclick="publish()" id="btn" class="w-full bg-rose-600 hover:bg-rose-700 py-5 rounded-2xl font-black text-lg tracking-widest transition-all active:scale-95 shadow-xl shadow-rose-600/20">
-                    PUBLISH NOW
-                </button>
-            </div>
-        </div>
+    nav { padding: .9rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 300; text-decoration: none; color: var(--ink); }
+    .logo span { color: var(--accent); font-style: italic; }
+    .back-btn { font-size: .68rem; font-weight: 600; letter-spacing: .1em; color: var(--muted); text-decoration: none; padding: .4rem .9rem; border: 1px solid var(--border); border-radius: 2rem; transition: all .2s; }
+    .back-btn:hover { color: var(--ink); border-color: var(--muted); }
+
+    .container { max-width: 520px; margin: 1.75rem auto; padding: 0 1.25rem; }
+    .section-title { font-size: .63rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
+    .tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; }
+    .tab { flex: 1; padding: .65rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: .75rem; color: var(--muted); font-family: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tab:hover:not(.active) { border-color: var(--muted); color: var(--ink); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1.4rem; margin-bottom: 1.2rem; }
+
+    .field { margin-bottom: 1.1rem; }
+    .field:last-child { margin-bottom: 0; }
+    .field label { display: block; font-size: .63rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: .45rem; }
+    .field input, .field select, .field textarea {
+      width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: .75rem; padding: .8rem 1rem;
+      font-family: inherit; font-size: .88rem; color: var(--ink); outline: none; transition: border-color .2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+    .field select option { background: var(--surface2); }
+    .field textarea { resize: vertical; min-height: 75px; }
+
+    /* ── IMAGE UPLOAD SECTION ── */
+    .img-section-label {
+      font-size: .63rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: .75rem; display: block;
+    }
+    .img-section-hint {
+      font-size: .72rem; color: var(--muted); line-height: 1.5;
+      margin-bottom: 1rem; padding: .75rem;
+      background: var(--surface2); border-radius: .75rem;
+    }
+    .img-section-hint code { color: var(--accent); font-size: .68rem; }
+
+    /* 3 image slots */
+    .img-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; }
+    .img-slot {
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .img-slot-label {
+      font-size: .6rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted); text-align: center;
+    }
+    .img-preview-box {
+      aspect-ratio: 1/1; background: var(--surface2);
+      border: 1.5px dashed var(--border); border-radius: .75rem;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      transition: border-color .2s;
+    }
+    .img-preview-box.has-img { border-style: solid; border-color: var(--accent); }
+    .img-preview-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .img-preview-box img.loaded { display: block; }
+    .img-preview-box .placeholder {
+      font-size: .65rem; color: var(--muted); text-align: center;
+      padding: .5rem; line-height: 1.3;
+    }
+    .img-id-input {
+      width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: .6rem; padding: .55rem .6rem;
+      font-family: inherit; font-size: .7rem; color: var(--ink);
+      outline: none; transition: border-color .2s; text-align: center;
+    }
+    .img-id-input:focus { border-color: var(--accent); }
+    .img-id-input::placeholder { color: var(--muted); font-size: .65rem; }
+
+    .hint { font-size: .68rem; color: var(--muted); margin-top: .4rem; line-height: 1.45; }
+
+    .btn-primary {
+      width: 100%; padding: 1.1rem; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius); font-family: inherit;
+      font-size: .82rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; transition: background .2s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .btn-primary:hover { background: #a93226; }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Stats */
+    .stats-table { width: 100%; border-collapse: collapse; }
+    .stats-table th { font-size: .63rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: left; padding: .55rem 0; border-bottom: 1px solid var(--border); }
+    .stats-table td { font-size: .83rem; padding: .65rem 0; border-bottom: 1px solid var(--border); color: var(--ink); }
+    .stats-table tr:last-child td { border-bottom: none; }
+    .clicks-badge { background: var(--surface2); color: var(--accent); font-size: .68rem; font-weight: 700; padding: .2rem .55rem; border-radius: 2rem; }
+    .loading-row td { text-align: center; color: var(--muted); padding: 2rem 0 !important; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(4rem); background: var(--green); color: #fff; padding: .75rem 1.5rem; border-radius: 2rem; font-size: .82rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.4); transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .35s; opacity: 0; z-index: 999; white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.error { background: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">REKHA<span>Art.</span></a>
+  <a class="back-btn" href="index.html">← View Store</a>
+</nav>
+
+<div class="container">
+  <p class="section-title">Admin Panel</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('upload')">📤 Upload Product</button>
+    <button class="tab" onclick="switchTab('stats')">📊 Click Stats</button>
+  </div>
+
+  <!-- ── UPLOAD PANEL ── -->
+  <div class="panel active" id="panel-upload">
+
+    <div class="card">
+      <div class="field">
+        <label>Product Name *</label>
+        <input id="pName" type="text" placeholder="e.g. Sunset Landscape" />
+      </div>
+      <div class="field">
+        <label>Price (₹) *</label>
+        <input id="pPrice" type="number" placeholder="e.g. 1500" />
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="pCategory">
+          <option value="Paintings">Paintings</option>
+          <option value="Sketches">Sketches</option>
+          <option value="Custom Art">Custom Art</option>
+          <option value="Digital Art">Digital Art</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Description (optional)</label>
+        <textarea id="pDesc" placeholder="Brief description…"></textarea>
+      </div>
     </div>
 
-    <script>
-        async function publish() {
-            const btn = document.getElementById('btn');
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV6AFO9LjDzrWnZ4Fw_Tdz32Ieif2h9MXFjavyrweUw5VM8DVQEYJhJuAx12xdJqePZw/exec";
+    <!-- ── IMAGE UPLOAD ── -->
+    <div class="card">
+      <span class="img-section-label">📸 Product Images (up to 3)</span>
+      <div class="img-section-hint">
+        Google Drive → Upload photo → Right click → <b>Share → Anyone with link</b><br/>
+        Your link: <code>drive.google.com/file/d/<b>ABC123.../view</b></code><br/>
+        Copy only the <b>File ID</b> (the bold part) and paste below.
+      </div>
 
-            const data = {
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                img: `https://drive.google.com/uc?export=view&id=${document.getElementById('pID').value}`,
-                action: 'add'
-            };
+      <div class="img-slots">
+        <!-- Slot 1 -->
+        <div class="img-slot">
+          <div class="img-slot-label">Photo 1 *</div>
+          <div class="img-preview-box" id="prev0">
+            <span class="placeholder">No image</span>
+            <img id="img0" src="" alt="" />
+          </div>
+          <input class="img-id-input" id="imgId0" placeholder="File ID" oninput="previewSlot(0)" />
+        </div>
+        <!-- Slot 2 -->
+        <div class="img-slot">
+          <div class="img-slot-label">Photo 2</div>
+          <div class="img-preview-box" id="prev1">
+            <span class="placeholder">Optional</span>
+            <img id="img1" src="" alt="" />
+          </div>
+          <input class="img-id-input" id="imgId1" placeholder="File ID" oninput="previewSlot(1)" />
+        </div>
+        <!-- Slot 3 -->
+        <div class="img-slot">
+          <div class="img-slot-label">Photo 3</div>
+          <div class="img-preview-box" id="prev2">
+            <span class="placeholder">Optional</span>
+            <img id="img2" src="" alt="" />
+          </div>
+          <input class="img-id-input" id="imgId2" placeholder="File ID" oninput="previewSlot(2)" />
+        </div>
+      </div>
 
-            if(!data.name || !data.price || !data.img) return alert("All fields required!");
+      <p class="hint" style="margin-top:.85rem;">Photo 1 is shown as the cover image on the gallery. Photos 2 & 3 are shown in the product viewer when customer taps.</p>
+    </div>
 
-            btn.innerText = "UPLOADING...";
-            btn.disabled = true;
+    <button class="btn-primary" id="uploadBtn" onclick="publishProduct()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Publish Product
+    </button>
+  </div>
 
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
+  <!-- ── STATS PANEL ── -->
+  <div class="panel" id="panel-stats">
+    <div class="card">
+      <table class="stats-table">
+        <thead><tr><th>ID</th><th>Name</th><th>₹</th><th>Clicks</th></tr></thead>
+        <tbody id="statsBody">
+          <tr class="loading-row"><td colspan="4">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="btn-primary" onclick="loadStats()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-5.15"/></svg>
+      Refresh Stats
+    </button>
+  </div>
+</div>
 
-            alert("Masterpiece Published!");
-            location.reload();
-        }
-    </script>
+<div class="toast" id="toast"></div>
+
+<script>
+  const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+
+  // ── TABS ──────────────────────────────────────────────────────
+  function switchTab(id) {
+    document.querySelectorAll(".tab").forEach((t,i)=>
+      t.classList.toggle("active", (i===0?"upload":"stats")===id));
+    document.querySelectorAll(".panel").forEach(p=>
+      p.classList.toggle("active", p.id==="panel-"+id));
+    if (id==="stats") loadStats();
+  }
+
+  // ── IMAGE PREVIEW ─────────────────────────────────────────────
+  function previewSlot(n) {
+    const id   = document.getElementById("imgId" + n).value.trim();
+    const box  = document.getElementById("prev" + n);
+    const img  = document.getElementById("img" + n);
+    const ph   = box.querySelector(".placeholder");
+    if (id) {
+      const url = `https://drive.google.com/uc?export=view&id=${id}`;
+      img.src = url;
+      img.onload  = () => { img.classList.add("loaded"); box.classList.add("has-img"); ph.style.display = "none"; };
+      img.onerror = () => { img.classList.remove("loaded"); box.classList.remove("has-img"); ph.style.display = ""; };
+    } else {
+      img.src = ""; img.classList.remove("loaded");
+      box.classList.remove("has-img"); ph.style.display = "";
+    }
+  }
+
+  // ── PUBLISH ───────────────────────────────────────────────────
+  async function publishProduct() {
+    const name  = document.getElementById("pName").value.trim();
+    const price = document.getElementById("pPrice").value.trim();
+    const cat   = document.getElementById("pCategory").value;
+    const desc  = document.getElementById("pDesc").value.trim();
+
+    // Collect image IDs (filter empty)
+    const images = [0,1,2]
+      .map(n => document.getElementById("imgId"+n).value.trim())
+      .filter(Boolean);
+
+    if (!name || !price) { showToast("Name aur Price required hai!", true); return; }
+    if (!images.length)  { showToast("Kam se kam 1 photo ka File ID daalein!", true); return; }
+
+    const btn = document.getElementById("uploadBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<span style="opacity:.7">Uploading…</span>`;
+
+    try {
+      const res  = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action:"add", name, price, images, category:cat, desc })
+      });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        showToast("✓ Published! Product ID: " + data.id);
+        ["pName","pPrice","pDesc"].forEach(id => document.getElementById(id).value="");
+        [0,1,2].forEach(n => { document.getElementById("imgId"+n).value=""; previewSlot(n); });
+      } else {
+        showToast("Kuch galat hua. Dobara try karein.", true);
+      }
+    } catch (err) {
+      showToast("Network error. SCRIPT_URL check karein.", true);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Publish Product`;
+  }
+
+  // ── STATS ─────────────────────────────────────────────────────
+  async function loadStats() {
+    const tbody = document.getElementById("statsBody");
+    tbody.innerHTML = `<tr class="loading-row"><td colspan="4">Loading…</td></tr>`;
+    try {
+      const products = await fetch(SCRIPT_URL).then(r => r.json());
+      if (!products.length) {
+        tbody.innerHTML = `<tr class="loading-row"><td colspan="4">No products yet.</td></tr>`;
+        return;
+      }
+      products.sort((a,b) => (Number(b.Clicks)||0) - (Number(a.Clicks)||0));
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td>${p.ID}</td>
+          <td>${p.Name}</td>
+          <td>₹${p.Price}</td>
+          <td><span class="clicks-badge">${p.Clicks||0}</span></td>
+        </tr>
+      `).join("");
+    } catch {
+      tbody.innerHTML = `<tr class="loading-row"><td colspan="4">Error. Script URL check karein.</td></tr>`;
+    }
+  }
+
+  // ── TOAST ─────────────────────────────────────────────────────
+  function showToast(msg, isError=false) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast" + (isError?" error":"");
+    void t.offsetWidth;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 3500);
+  }
+</script>
 </body>
 </html>
