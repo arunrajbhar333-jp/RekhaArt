@@ -1,146 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekha Art | Premium Gallery</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fafafa; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; }
-        .product-card:hover { transform: translateY(-8px); border-color: #ef4444; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rekha Art | Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f0eb;
+      --surface: #ffffff;
+      --ink: #1a1410;
+      --muted: #8a7d72;
+      --accent: #c0392b;
+      --accent2: #e8d5c4;
+      --border: rgba(26,20,16,.08);
+      --radius: 1.25rem;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(245,240,235,.9); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: .9rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; color: var(--ink); text-decoration: none; }
+    .logo span { color: var(--accent); font-style: italic; }
+    .btn-admin { font-size: .65rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #fff; background: var(--ink); padding: .45rem 1rem; border-radius: 2rem; text-decoration: none; transition: background .2s; }
+    .btn-admin:hover { background: var(--accent); }
+
+    /* ── HERO ── */
+    .hero { padding: 3rem 1.5rem 1.5rem; max-width: 900px; margin: 0 auto; }
+    .hero-tag { font-size: .65rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); display: inline-block; margin-bottom: .7rem; }
+    .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 6vw, 3.8rem); font-weight: 300; line-height: 1.1; }
+    .hero h1 em { font-style: italic; color: var(--accent); }
+
+    /* ── SEARCH + FILTER ── */
+    .controls { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+    .search-box { display: flex; align-items: center; gap: .6rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: .7rem 1rem; transition: border-color .2s; }
+    .search-box:focus-within { border-color: var(--accent); }
+    .search-box input { border: none; outline: none; background: transparent; font-family: inherit; font-size: .9rem; color: var(--ink); width: 100%; }
+    .search-box input::placeholder { color: var(--muted); }
+    .filters { display: flex; gap: .5rem; overflow-x: auto; }
+    .filters::-webkit-scrollbar { display: none; }
+    .chip { flex-shrink: 0; font-size: .75rem; font-weight: 500; padding: .45rem 1rem; border-radius: 2rem; cursor: pointer; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); transition: all .2s; }
+    .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .chip:hover:not(.active) { border-color: var(--ink); color: var(--ink); }
+
+    /* ── GRID ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1.2rem; padding: 0 1.5rem 5rem; max-width: 1200px; margin: 0 auto; }
+
+    /* ── CARD ── */
+    .card { background: var(--surface); border-radius: var(--radius); overflow: hidden; border: 1.5px solid var(--border); transition: transform .3s, box-shadow .3s; cursor: pointer; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(26,20,16,.1); }
+    .card-img-wrap { position: relative; aspect-ratio: 1/1; overflow: hidden; background: var(--accent2); }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .card:hover .card-img-wrap img { transform: scale(1.05); }
+    .card-badge { position: absolute; top: .65rem; left: .65rem; background: rgba(255,255,255,.9); font-size: .58rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: .22rem .55rem; border-radius: 2rem; color: var(--muted); }
+    .multi-dot { position: absolute; bottom: .65rem; right: .65rem; background: rgba(26,20,16,.55); color: #fff; font-size: .6rem; font-weight: 700; padding: .22rem .5rem; border-radius: 2rem; display: flex; align-items: center; gap: .25rem; }
+    .card-body { padding: .9rem; }
+    .card-cat { font-size: .62rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .25rem; }
+    .card-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: .8rem; }
+    .card-price { font-size: 1.15rem; font-weight: 700; }
+    .btn-buy { width: 2.1rem; height: 2.1rem; background: var(--accent); color: #fff; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, transform .15s; flex-shrink: 0; }
+    .btn-buy:hover { background: var(--ink); }
+    .btn-buy:active { transform: scale(.9); }
+
+    /* ── SKELETON ── */
+    .sk { animation: pulse 1.5s ease-in-out infinite; background: var(--surface); border-radius: var(--radius); border: 1.5px solid var(--border); overflow: hidden; }
+    .sk-img { aspect-ratio: 1/1; background: #e8e0d8; }
+    .sk-body { padding: .9rem; }
+    .sk-line { height: .65rem; background: #e8e0d8; border-radius: .4rem; margin-bottom: .55rem; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+
+    /* ═══════════════════════════════════════════════════
+       PRODUCT VIEWER MODAL (Amazon-style)
+    ═══════════════════════════════════════════════════ */
+    .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(20,15,10,.6); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity .3s; }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .pv-modal {
+      background: var(--surface);
+      border-radius: 1.5rem;
+      width: 100%; max-width: 860px;
+      max-height: 92vh; overflow-y: auto;
+      transform: scale(.96); transition: transform .35s cubic-bezier(.22,1,.36,1);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    .overlay.open .pv-modal { transform: scale(1); }
+
+    /* Left pane — image viewer */
+    .pv-images {
+      padding: 1.5rem 1rem 1.5rem 1.5rem;
+      display: flex; flex-direction: column; gap: .75rem;
+    }
+    .pv-main-img {
+      aspect-ratio: 1/1; border-radius: 1rem; overflow: hidden;
+      background: var(--accent2); position: relative;
+    }
+    .pv-main-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: opacity .25s;
+    }
+    /* Swipe arrows */
+    .pv-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.85); border: none; width: 2rem; height: 2rem;
+      border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--ink); transition: background .2s; z-index: 2;
+    }
+    .pv-arrow:hover { background: #fff; }
+    .pv-arrow.left { left: .6rem; }
+    .pv-arrow.right { right: .6rem; }
+
+    /* Thumbnail strip */
+    .pv-thumbs {
+      display: flex; gap: .5rem; overflow-x: auto;
+    }
+    .pv-thumbs::-webkit-scrollbar { display: none; }
+    .pv-thumb {
+      flex-shrink: 0; width: 4rem; height: 4rem;
+      border-radius: .6rem; overflow: hidden; cursor: pointer;
+      border: 2px solid transparent; transition: border-color .2s;
+    }
+    .pv-thumb.active { border-color: var(--accent); }
+    .pv-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Dot indicators */
+    .pv-dots { display: flex; gap: .35rem; justify-content: center; }
+    .pv-dot { width: .45rem; height: .45rem; border-radius: 50%; background: var(--border); transition: background .2s; }
+    .pv-dot.active { background: var(--accent); }
+
+    /* Right pane — product info */
+    .pv-info {
+      padding: 1.5rem 1.5rem 1.5rem 1rem;
+      display: flex; flex-direction: column;
+      border-left: 1px solid var(--border);
+    }
+    .pv-close {
+      align-self: flex-end; background: #f0ebe5; border: none;
+      width: 2rem; height: 2rem; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); transition: background .2s; margin-bottom: .75rem;
+    }
+    .pv-close:hover { background: #e0d5c8; }
+    .pv-cat { font-size: .63rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: .35rem; }
+    .pv-name { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 600; line-height: 1.15; color: var(--ink); }
+    .pv-price { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin: .7rem 0; }
+    .pv-desc { font-size: .85rem; color: var(--muted); line-height: 1.65; flex: 1; }
+    .pv-id { font-size: .65rem; color: var(--muted); margin-top: .75rem; }
+
+    /* QR box */
+    .pv-qr {
+      background: var(--bg); border: 2px dashed var(--border);
+      border-radius: 1rem; padding: 1rem; text-align: center;
+      margin: 1rem 0;
+    }
+    .pv-qr img { width: 130px; height: 130px; border-radius: .5rem; }
+    .pv-qr p { font-size: .58rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; }
+
+    .pv-actions { display: flex; flex-direction: column; gap: .6rem; margin-top: auto; }
+    .btn-upi { width: 100%; padding: .9rem; background: #0070f3; color: #fff; border: none; border-radius: .9rem; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: background .2s, transform .1s; }
+    .btn-upi:hover { background: #005ad4; }
+    .btn-upi:active { transform: scale(.98); }
+    .btn-wa { width: 100%; padding: .9rem; background: #25d366; color: #fff; border: none; border-radius: .9rem; font-family: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: background .2s, transform .1s; }
+    .btn-wa:hover { background: #1db954; }
+    .btn-wa:active { transform: scale(.98); }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 620px) {
+      .pv-modal { grid-template-columns: 1fr; max-height: 95vh; }
+      .pv-info { border-left: none; border-top: 1px solid var(--border); }
+      .pv-images { padding: 1rem 1rem 0; }
+      .pv-info { padding: 1rem; }
+      .overlay { align-items: flex-end; padding: 0; }
+      .pv-modal { border-radius: 1.5rem 1.5rem 0 0; }
+    }
+    @media (max-width: 400px) {
+      .grid { grid-template-columns: 1fr 1fr; gap: .75rem; padding: 0 .75rem 4rem; }
+    }
+
+    .empty { grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: var(--muted); }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  </style>
 </head>
 <body>
 
-    <nav class="sticky top-0 z-50 glass px-6 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-extrabold tracking-tighter text-black">REKHA<span class="text-rose-600 italic">ART.</span></h1>
-            <div class="flex gap-4">
-                <button class="text-gray-500 hover:text-black transition"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
-                <a href="admin.html" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest">ADMIN</a>
-            </div>
-        </div>
-    </nav>
+<nav>
+  <a class="logo" href="#">REKHA<span>Art.</span></a>
+  <a class="btn-admin" href="admin.html">Admin</a>
+</nav>
 
-    <div class="flex gap-3 px-6 py-4 overflow-x-auto no-scrollbar max-w-7xl mx-auto">
-        <button class="bg-black text-white px-6 py-2 rounded-full text-sm font-semibold">Latest</button>
-        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Paintings</button>
-        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Sketches</button>
-        <button class="bg-white border text-gray-600 px-6 py-2 rounded-full text-sm font-semibold hover:border-black">Custom Art</button>
+<div class="hero">
+  <span class="hero-tag">✦ Handcrafted Collection</span>
+  <h1>Original Art,<br /><em>Delivered to You</em></h1>
+</div>
+
+<div class="controls">
+  <div class="search-box">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="searchInput" type="text" placeholder="Search artworks…" oninput="filterProducts()" />
+  </div>
+  <div class="filters" id="filterBar"></div>
+</div>
+
+<div class="grid" id="productGrid">
+  <div class="sk"><div class="sk-img"></div><div class="sk-body"><div class="sk-line" style="width:55%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%"></div></div></div>
+  <div class="sk"><div class="sk-img"></div><div class="sk-body"><div class="sk-line" style="width:55%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%"></div></div></div>
+  <div class="sk"><div class="sk-img"></div><div class="sk-body"><div class="sk-line" style="width:55%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%"></div></div></div>
+  <div class="sk"><div class="sk-img"></div><div class="sk-body"><div class="sk-line" style="width:55%"></div><div class="sk-line" style="width:80%"></div><div class="sk-line" style="width:40%"></div></div></div>
+</div>
+
+<!-- ═══ PRODUCT VIEWER MODAL ═══ -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="pv-modal" id="pvModal">
+
+    <!-- LEFT: Image viewer -->
+    <div class="pv-images">
+      <div class="pv-main-img" id="pvMainWrap">
+        <img id="pvMainImg" src="" alt="" />
+        <button class="pv-arrow left" id="pvPrev" onclick="shiftImage(-1)">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button class="pv-arrow right" id="pvNext" onclick="shiftImage(1)">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+      <!-- Thumbnails -->
+      <div class="pv-thumbs" id="pvThumbs"></div>
+      <!-- Dots -->
+      <div class="pv-dots" id="pvDots"></div>
     </div>
 
-    <main class="max-w-7xl mx-auto p-6">
-        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
-            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
-            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
-            <div class="animate-pulse bg-gray-200 h-80 rounded-3xl"></div>
-        </div>
-    </main>
+    <!-- RIGHT: Info + buy -->
+    <div class="pv-info">
+      <button class="pv-close" onclick="closeModal()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="pv-cat" id="pvCat">—</div>
+      <div class="pv-name" id="pvName">—</div>
+      <div class="pv-price" id="pvPrice">₹0</div>
+      <div class="pv-desc" id="pvDesc"></div>
+      <div class="pv-id" id="pvId"></div>
 
-    <div id="payModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modalContent">
-            <div class="p-8">
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <h2 id="modalTitle" class="text-2xl font-extrabold text-gray-900">Product Name</h2>
-                        <p id="modalPrice" class="text-rose-600 text-xl font-bold mt-1">₹0.00</p>
-                    </div>
-                    <button onclick="closeModal()" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+      <div class="pv-qr">
+        <img id="pvQr" src="" alt="QR" />
+        <p>Scan with any UPI app</p>
+      </div>
 
-                <div class="bg-gray-50 rounded-3xl p-6 border-2 border-dashed border-gray-200 text-center mb-6">
-                    <img id="qrDisplay" src="" alt="Scan to Pay" class="w-48 mx-auto rounded-xl shadow-sm mb-2">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secure UPI Merchant QR</span>
-                </div>
-
-                <div class="space-y-3">
-                    <button id="directPayBtn" class="w-full bg-[#0070f3] text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-700 transition active:scale-95">
-                        <i class="fa-solid fa-bolt-lightning"></i> PAY VIA UPI APP
-                    </button>
-                    <button id="waNotifyBtn" class="w-full bg-black text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-800 transition active:scale-95">
-                        <i class="fa-brands fa-whatsapp"></i> SEND PAYMENT PROOF
-                    </button>
-                </div>
-            </div>
-        </div>
+      <div class="pv-actions">
+        <button class="btn-upi" id="btnUpi">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m13 2-3 6H5l4 4-1.5 6L13 15l5.5 3-1.5-6 4-4h-5z"/></svg>
+          Pay via UPI App
+        </button>
+        <button class="btn-wa" id="btnWa">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          Send Payment Proof
+        </button>
+      </div>
     </div>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV6AFO9LjDzrWnZ4Fw_Tdz32Ieif2h9MXFjavyrweUw5VM8DVQEYJhJuAx12xdJqePZw/exec"; // Yahan apna URL daalein
+  </div>
+</div>
 
-        async function loadProducts() {
-            try {
-                const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
-                renderUI(data);
-            } catch (err) { console.error("Error loading products"); }
-        }
+<script>
+  // ── CONFIG ─────────────────────────────────────────────────────
+  const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
 
-        function renderUI(products) {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = products.map(p => `
-                <div class="product-card bg-white rounded-3xl p-3">
-                    <div class="relative overflow-hidden rounded-2xl aspect-square mb-4">
-                        <img src="${p.ImageURL}" class="object-cover w-full h-full" alt="${p.Name}">
-                        <div class="absolute top-3 left-3 bg-white/90 px-3 py-1 rounded-full text-[10px] font-bold tracking-tighter">
-                            ${p.ID}
-                        </div>
-                    </div>
-                    <div class="px-2 pb-2">
-                        <h3 class="text-sm font-semibold text-gray-500 mb-1">${p.Category || 'Collection'}</h3>
-                        <h2 class="text-lg font-bold text-gray-900 truncate mb-3">${p.Name}</h2>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xl font-black">₹${p.Price}</span>
-                            <button onclick="handleBuy('${p.ID}', '${p.Name}', '${p.Price}')" class="bg-rose-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-black transition">
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+  // ── STATE ──────────────────────────────────────────────────────
+  let allProducts   = [];
+  let settings      = {};
+  let activeCategory = "All";
+  let currentImages = [];
+  let currentImgIdx = 0;
 
-        function handleBuy(id, name, price) {
-            // Track Click
-            fetch(SCRIPT_URL + `?action=track&id=${id}`, { method: 'POST' });
+  // ── INIT ───────────────────────────────────────────────────────
+  async function init() {
+    try {
+      const [products, s] = await Promise.all([
+        fetch(SCRIPT_URL).then(r => r.json()),
+        fetch(SCRIPT_URL + "?action=settings").then(r => r.json())
+      ]);
+      allProducts = products;
+      settings    = s;
+      buildFilters(products);
+      renderGrid(products);
+    } catch (err) {
+      document.getElementById("productGrid").innerHTML =
+        `<div class="empty"><div class="empty-icon">🎨</div><p>Could not load products.<br/>Check SCRIPT_URL in index.html</p></div>`;
+    }
+  }
 
-            const upiId = "rekhaart@upi"; // Static or dynamic
-            const waNumber = "919999999999"; 
+  // ── FILTER ─────────────────────────────────────────────────────
+  function buildFilters(products) {
+    const cats = ["All", ...new Set(products.map(p => p.Category).filter(Boolean))];
+    document.getElementById("filterBar").innerHTML = cats.map((c, i) =>
+      `<button class="chip ${i===0?'active':''}" data-cat="${c}" onclick="setFilter(this)">${c}</button>`
+    ).join("");
+  }
+  function setFilter(el) {
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    el.classList.add("active");
+    activeCategory = el.dataset.cat;
+    filterProducts();
+  }
+  function filterProducts() {
+    const q = document.getElementById("searchInput").value.toLowerCase();
+    const filtered = allProducts.filter(p => {
+      const matchCat = activeCategory === "All" || p.Category === activeCategory;
+      const matchQ   = !q || p.Name.toLowerCase().includes(q) || (p.Description||"").toLowerCase().includes(q);
+      return matchCat && matchQ;
+    });
+    renderGrid(filtered);
+  }
 
-            document.getElementById('modalTitle').innerText = name;
-            document.getElementById('modalPrice').innerText = "₹" + price;
-            document.getElementById('qrDisplay').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${upiId}%26pn=RekhaArt%26am=${price}%26cu=INR`;
+  // ── RENDER GRID ────────────────────────────────────────────────
+  function renderGrid(products) {
+    const grid = document.getElementById("productGrid");
+    if (!products.length) {
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">🎨</div><p>No artworks found.</p></div>`;
+      return;
+    }
+    grid.innerHTML = products.map(p => {
+      const imgs  = Array.isArray(p.Images) ? p.Images : [p.Images].filter(Boolean);
+      const cover = imgs[0] || "";
+      const count = imgs.length;
+      return `
+        <div class="card" onclick="openViewer(${allProducts.indexOf(p)})">
+          <div class="card-img-wrap">
+            <img src="${cover}" alt="${esc(p.Name)}" loading="lazy" onerror="this.style.opacity='.3'" />
+            <span class="card-badge">${esc(p.ID)}</span>
+            ${count > 1 ? `<span class="multi-dot">
+              <svg width="9" height="9" fill="currentColor" viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zm-9-3.5-2.5-3L7 16h10l-3.5-4.5z"/></svg>
+              ${count}
+            </span>` : ""}
+          </div>
+          <div class="card-body">
+            <div class="card-cat">${esc(p.Category || "Collection")}</div>
+            <div class="card-name">${esc(p.Name)}</div>
+            <div class="card-foot">
+              <div class="card-price">₹${p.Price}</div>
+              <button class="btn-buy" onclick="event.stopPropagation();openViewer(${allProducts.indexOf(p)})">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 
-            document.getElementById('directPayBtn').onclick = () => {
-                window.location.href = `upi://pay?pa=${upiId}&pn=RekhaArt&am=${price}&cu=INR`;
-            };
+  function esc(s) { return String(s||"").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-            document.getElementById('waNotifyBtn').onclick = () => {
-                window.open(`https://wa.me/${waNumber}?text=Paid for ${name} (ID: ${id})`);
-            };
+  // ── OPEN PRODUCT VIEWER ────────────────────────────────────────
+  function openViewer(idx) {
+    const p = allProducts[idx];
+    if (!p) return;
 
-            const modal = document.getElementById('payModal');
-            const content = document.getElementById('modalContent');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-            }, 10);
-        }
+    // Track click
+    fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({ action:"track", id: p.ID }) }).catch(()=>{});
 
-        function closeModal() {
-            const modal = document.getElementById('payModal');
-            const content = document.getElementById('modalContent');
-            content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
+    // Build images array
+    currentImages = Array.isArray(p.Images) ? p.Images.filter(Boolean) : [p.Images].filter(Boolean);
+    if (!currentImages.length) currentImages = [""];
+    currentImgIdx = 0;
 
-        window.onload = loadProducts;
-    </script>
+    // Fill info
+    document.getElementById("pvCat").textContent   = p.Category || "Collection";
+    document.getElementById("pvName").textContent  = p.Name;
+    document.getElementById("pvPrice").textContent = "₹" + p.Price;
+    document.getElementById("pvDesc").textContent  = p.Description || "";
+    document.getElementById("pvId").textContent    = "Product ID: " + p.ID;
+
+    // QR
+    const upiId = settings.upiId || "yourupi@bank";
+    const qrUrl = settings.qrLink ||
+      `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${encodeURIComponent(upiId)}%26pn=RekhaArt%26am=${p.Price}%26cu=INR`;
+    document.getElementById("pvQr").src = qrUrl;
+
+    // Buttons
+    document.getElementById("btnUpi").onclick = () => {
+      window.location.href = `upi://pay?pa=${upiId}&pn=RekhaArt&am=${p.Price}&cu=INR`;
+    };
+    const waNum = settings.whatsapp || "919999999999";
+    document.getElementById("btnWa").onclick = () => {
+      const msg = encodeURIComponent(`Hi! I've paid for *${p.Name}* (ID: ${p.ID}) — ₹${p.Price}. Sending proof now.`);
+      window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
+    };
+
+    renderImageViewer();
+
+    document.getElementById("overlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  // ── IMAGE VIEWER RENDER ────────────────────────────────────────
+  function renderImageViewer() {
+    const img  = document.getElementById("pvMainImg");
+    img.style.opacity = "0";
+    img.src = currentImages[currentImgIdx] || "";
+    img.onload = () => { img.style.opacity = "1"; };
+    img.onerror = () => { img.style.opacity = ".2"; };
+
+    // Show/hide arrows
+    const showArrows = currentImages.length > 1;
+    document.getElementById("pvPrev").style.display = showArrows ? "flex" : "none";
+    document.getElementById("pvNext").style.display = showArrows ? "flex" : "none";
+
+    // Thumbnails
+    const thumbs = document.getElementById("pvThumbs");
+    if (currentImages.length > 1) {
+      thumbs.innerHTML = currentImages.map((url, i) => `
+        <div class="pv-thumb ${i===currentImgIdx?'active':''}" onclick="setImage(${i})">
+          <img src="${url}" alt="Photo ${i+1}" />
+        </div>
+      `).join("");
+      thumbs.style.display = "flex";
+    } else {
+      thumbs.style.display = "none";
+    }
+
+    // Dots
+    const dots = document.getElementById("pvDots");
+    if (currentImages.length > 1) {
+      dots.innerHTML = currentImages.map((_, i) =>
+        `<div class="pv-dot ${i===currentImgIdx?'active':''}"></div>`
+      ).join("");
+      dots.style.display = "flex";
+    } else {
+      dots.style.display = "none";
+    }
+  }
+
+  function setImage(idx) {
+    currentImgIdx = (idx + currentImages.length) % currentImages.length;
+    renderImageViewer();
+  }
+  function shiftImage(dir) { setImage(currentImgIdx + dir); }
+
+  // Touch/swipe on main image
+  let touchStartX = 0;
+  document.getElementById("pvMainWrap").addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.getElementById("pvMainWrap").addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) shiftImage(dx < 0 ? 1 : -1);
+  });
+
+  // ── CLOSE ──────────────────────────────────────────────────────
+  function closeModal() {
+    document.getElementById("overlay").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById("overlay")) closeModal();
+  }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  init();
+</script>
 </body>
 </html>
